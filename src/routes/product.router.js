@@ -1,7 +1,9 @@
 import { Router } from 'express'
 import ProductManager from '../controllers/ProductManager.js'
-import { uploader } from '../uploader.js'
+//import { uploader } from '../uploader.js'
 import { handlePolicies } from '../middlewares/athenticate.js'
+import CustomError from '../services/error.custom.class.js'
+import errorsDictionary from '../services/error.dictionary.js'
 
 const productManager = new ProductManager()
 const router = Router()
@@ -29,32 +31,34 @@ router.get('/:pid', async (req, res) => {
   }
 })
 
-router.post("/", handlePolicies(['ADMIN']), uploader.single('thumbnail'), async (req, res) => {
+// comienzo a generar el manejo de errores
+router.post("/", async (req, res) => {
   try {
-    if (!req.file) return res.status(400).send({ status: 'FIL', data: 'No se pudo subir el archivo' })
+    const { title, description, price, category, status, code, stock, thumbnail } = req.body
 
-    const { title, description, price, category, status, code, stock } = req.body
-    if (!title || !description || !price || !category || !status || !code || !stock) {
-        return res.status(400).send({ status: 'ERR', data: 'Debes proporcionar todos los campos completos. Todos los valores son obligatorios.' })
-    }
-
-    const newProduct = {
+    if (!title || !description || !price || !category || !code || !stock || !thumbnail) {
+        throw new CustomError(errorsDictionary.FEW_PARAMETERS)
+    } else {
+      const newProduct = {
         title,
         description,
         price,
         category,
         status,
-        thumbnail: req.file.filename,
+        thumbnail,
         code,
         stock
-    }
+      }
 
-    const result = await productManager.addProduct(newProduct)
-    res.status(200).send({ status: 'OK', data: result })
+      const result = await productManager.addProduct(newProduct)
+      res.status(200).send({ status: 'OK', data: result })
+
+    }
   } catch (err) {
-    res.status(500).send({ status: 'ERR', data: err.message })
+    res.status(err.code).send({ status: 'ERR', data: err.message })
   }
 })
+
 
 router.put("/:pid", handlePolicies(['ADMIN']), async (req, res) => {
   try {
@@ -91,6 +95,16 @@ router.param('pid', async (req, res, next, pid) => {
       next()
   } else {
       res.status(404).send({ status: 'ERR', data: 'Parámetro no válido' })
+  }
+})
+
+// ést endpoint obtendra la cantidad de productos que queramos, en éste caso será 100
+router.get('/mockingproducts/:qty', async (req, res) => {
+  try {
+      const products = await productManager.generateMockingProducts(req.params.qty)
+      res.status(200).send({ status: 'OK', data: products })
+  } catch (err) {
+    res.status(500).send({ status: 'ERR', data: err.message })
   }
 })
 

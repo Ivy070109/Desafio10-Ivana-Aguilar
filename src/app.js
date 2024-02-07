@@ -18,6 +18,7 @@ import sessionsRoutes from './routes/sessions.routes.js'
 import MongoSingleton from "./services/mongoSingleton.js"
 
 import config from "./config.js"
+//import errorsDictionary from "./services/error.dictionary.js"
 
 // const PORT = 8080
 // const MONGOOSE_URL = 'mongodb+srv://ivyaguilar07:bjLpjWzJQGdcrVRL@cluster0.2olteyc.mongodb.net/ecommerce'
@@ -93,6 +94,15 @@ try {
 
     socketProducts(socketServer)
     socketChat(socketServer)
+
+    // app.use((err, req, res, next) => {
+    //     const code = err.code || 500
+    //     res.status(code).send({ status: 'ERR', data: err.message })
+    // })
+
+    app.all('*', (req, res, next) => {
+        res.status(404).send({ status: 'ERR', data: 'Página no encontrada o parámetro no válido' })
+    })
 } catch (err) {
     console.log(`No se puede conectar con las bases de datos (${err.message})`)
 }

@@ -1,4 +1,5 @@
 import { ProductService } from "../services/products.mongo.dao.js"
+import { faker } from '@faker-js/faker'
 
 const productService = new ProductService()
 
@@ -18,7 +19,7 @@ class ProductManager {
     //creación de productos
     addProduct = async (product) => {
         try {
-            return await productService.addProduct(product)
+            return await productService.addProduct()
         } catch (err) {
             return err.message
         }
@@ -55,6 +56,31 @@ class ProductManager {
     deleteProductById = async (pid) => {
         try {
             return await productService.deleteProductById(pid)
+        } catch (err) {
+            return err.message
+        }
+    }
+
+    generateMockingProducts = async (qty) => {
+        try {
+            const mockProduct = []
+
+            for (let i = 0; i <= qty; i++) {
+                const product = {
+                    _id: faker.database.mongodbObjectId(),
+                    title: faker.commerce.product(),
+                    description: faker.commerce.productDescription(),
+                    price: faker.commerce.price(),
+                    category: faker.commerce.department(),
+                    thumbnail: faker.image.urlLoremFlickr({ category: 'fashion' }),
+                    status: faker.datatype.boolean(0.9),
+                    code: faker.string.nanoid(4),
+                    stock: faker.string.numeric(4)
+                }
+                mockProduct.push(product)
+            }
+
+            return mockProduct
         } catch (err) {
             return err.message
         }

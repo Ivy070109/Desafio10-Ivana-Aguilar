@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose, { trusted } from "mongoose"
 //importar paginate 
 import mongoosePaginate from 'mongoose-paginate-v2'
 
@@ -25,7 +25,8 @@ const schema = new mongoose.Schema({
     },
     thumbnail: {
         type: String,
-        required: true 
+        required: false,
+        default: "Sin imagenes" 
     },
     code: {
         type: String,

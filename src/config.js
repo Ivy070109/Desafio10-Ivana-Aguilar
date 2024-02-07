@@ -7,7 +7,7 @@ commandLineOptions
     .option('--mode <mode>')
 commandLineOptions.parse()
 
-dotenv.config()
+dotenv.config({ path: './.env.devel' })
 // aún no tengo más sistemas .env, pero en las líneas de comando ya incluí un sistema de producción y otro de desarrollador
 
 //console.log(commandLineOptions.opts())
