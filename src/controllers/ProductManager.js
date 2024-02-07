@@ -19,7 +19,7 @@ class ProductManager {
     //creación de productos
     addProduct = async (product) => {
         try {
-            return await productService.addProduct()
+            return await productService.addProduct(product)
         } catch (err) {
             return err.message
         }

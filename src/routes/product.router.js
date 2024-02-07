@@ -34,7 +34,7 @@ router.get('/:pid', async (req, res) => {
 // comienzo a generar el manejo de errores
 router.post("/", async (req, res) => {
   try {
-    const { title, description, price, category, status, code, stock, thumbnail } = req.body
+    const { title, description, price, category, code, stock, thumbnail } = req.body
 
     if (!title || !description || !price || !category || !code || !stock || !thumbnail) {
         throw new CustomError(errorsDictionary.FEW_PARAMETERS)
@@ -44,7 +44,6 @@ router.post("/", async (req, res) => {
         description,
         price,
         category,
-        status,
         thumbnail,
         code,
         stock
@@ -52,13 +51,11 @@ router.post("/", async (req, res) => {
 
       const result = await productManager.addProduct(newProduct)
       res.status(200).send({ status: 'OK', data: result })
-
     }
   } catch (err) {
     res.status(err.code).send({ status: 'ERR', data: err.message })
   }
 })
-
 
 router.put("/:pid", handlePolicies(['ADMIN']), async (req, res) => {
   try {

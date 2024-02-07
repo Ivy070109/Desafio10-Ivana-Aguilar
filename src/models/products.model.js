@@ -26,7 +26,6 @@ const schema = new mongoose.Schema({
     thumbnail: {
         type: String,
         required: false,
-        default: "Sin imagenes" 
     },
     code: {
         type: String,
